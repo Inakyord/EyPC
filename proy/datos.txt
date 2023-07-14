@@ -1,0 +1,221 @@
+DATOS
+
+
+; Lista de funciones soportadas:
+
+FUNCIÓN 					CODIGO		PARAMETROS 					RETORNO
+
+Activa modo video			AH=00h 		AL=modo video				AL = Bandera del Modo de video
+Forma cursor m. texto		AH=01h 		CH=inicio, CL=fin 	
+Asigna pos. cursor			AH=02h 		BH=Pg., DH=Fil, DL=Col
+lee pos. y tam. cursor		AH=03h 		BH=Pg. 						AX=0, CH=Ini, CL=Fin, DH=Fil, DL=Col
+lee pos. light pen 			AH=04h 		
+selecc. pag. activa 		AH=05h 		AL=Número de Página
+Scroll up window			AH=06h		AL=Líneas scroll(0=Borra),BH=Atributo líneas en blanco
+Scroll down window			AH=07h 		AL=Líneas scroll(0=Borra),BH=Atributo líneas en blanco
+Lee char y atb pos.cursor	AH=08h		BH=#Pg.						AH = Color, AL = Caracter
+Escr char y atb p. cursor	AH=09h		AL=Char, BH=#pg, BL=Color, CX=#repeticiones
+Escr char en pos. cursor 	AH=0Ah		AL=Char, BH=#pg, CX=#repeticiones
+
+Color de fondo/borde		AH=0Bh		BL = Color del fondo/borde
+							BH=00h 		(borde solo en modo texto)
+
+Asigna paleta 				AH=0Bh		BL = ID de Paleta
+							BH=01h 
+
+Escribe pixel gráfico		AH=0Ch		AL=Color, BH=Pg., CX=X, DX=Y	
+Lee pixel gráfico			AH=0Dh		BH=Pg., CX=X, DX=Y				AL = Color
+Salida de teletipo			AH=0Eh		AL=char, BL=Color(solo m. gráf.)	
+Lee modo de video actual	AH=0Fh										AL=Modo de video
+Escribe string 				AH=13h		AL=m. escritura, BH=Pg., BL=Color, CX=|string|, DH=Fil, DL=Col,
+										ES:BP = Posición del string	
+
+
+
+; Modos de video:
+
+MODO		RESOLUCION		COLORES		TIPO
+
+AL = 00h	40x25			16			Texto
+AL = 01h	40x25			16			Texto
+AL = 02h	80x25			16			Texto
+AL = 03h	80x25			16			Texto
+AL = 04h	320x200			4			Gráfico
+AL = 05h	320x200			4			Gráfico
+AL = 06h	640x200			2			Gráfico
+AL = 07h	80x25			2			Texto
+AL = 0Dh	320x200			16			Gráfico
+AL = 0Eh	640x200			16			Gráfico
+AL = 0Fh	640x350			2			Gráfico
+AL = 10h	640x350			4			Gráfico EGA 64 KB
+AL = 10h	640x350			16			Gráfico EGA menor de 64 KB y VGA
+AL = 11h	640x480			2			Gráfico
+AL = 12h	640x480			16			Gráfico
+AL = 13h	320x200			256			Gráfico
+BX = 100h	640x400			256			Gráfico (SVGA)
+BX = 101h	640x480			256			Gráfico (SVGA)
+BX = 102h	800x600			16			Gráfico (SVGA)
+BX = 103h	800x600			256			Gráfico (SVGA)
+BX = 104h	1024x768		16			Gráfico (SVGA)
+BX = 105h	1024x768		256			Gráfico (SVGA)
+BX = 106h	1028x1024		16			Gráfico (SVGA)
+BX = 107h	1028x1024		256			Gráfico (SVGA)
+BX = 113h	800x600			32K			Gráfico (SVGA)
+BX = 114h	800x600			64K			Gráfico (SVGA)
+BX = 115h	800x600			16M			Gráfico (SVGA)
+
+
+
+; Lista de servicios de la int 10h
+
+AH = 00h		Vídeo		Establecer modo de vídeo
+AH = 01h		Vídeo		Establecer el tamaño del cursor
+AH = 02h		Vídeo		Posicionar el cursor
+AH = 03h		Vídeo		Obtener posición y tamaño del cursor
+AH = 04h		Vídeo		Obtener posición del lápiz óptico (excepto VGA)
+AH = 06h		Vídeo		Subir línea
+AH = 07h		Vídeo		Bajar línea
+AH = 0Bh 		BH=00h		Vídeo	Establecer color de fondo o borde
+AH = 0Bh 		BH=01h		Vídeo	Establecer paleta gráfica
+AH = 0Ch		Vídeo		Escribir pixel gráfico
+AH = 0Dh		Vídeo		Leer pixel gráfico
+AH = 0Eh		Vídeo		Función TeleType (escribir caracteres en la pantalla)
+AH = 0Fh		Vídeo		Obtener el modo de vídeo
+AX = 1100h		Vídeo		Cambiar fuente de vídeo (Modo Texto)
+AX = 4F02h		SVGA		Establecer modo de vídeo SVGA
+AX = 4F03h		SVGA		Obtener modo de vídeo SVGA
+
+
+; interrpiones del cronometro
+
+INT 1Ah,  00h (0)        Read System-Timer Time Counter                   all
+ 
+    Reports the current time of day, and whether 24 hours has passed since
+    1) the last power-on, 2) the last system reset, or 3) the last system-
+    timer time read or set.
+ 
+       On entry:      AH         00h
+ 
+       Returns:       CX         High-order part of clock count
+                      DX         Low-order part of clock count
+                      AL         0 if 24 hours has not passed; else 1
+
+INT 21H Función 01H
+Entrada de Carácter con Eco (ó salida)
+LLAMADA:
+AH = 01H
+DEVUELVE:
+AL = Código ASCII del Carácter leído y Echo a pantalla
+(si AH =08H) es servicio sin Echo)
+EFECTO: Se lee un carácter del dispositivo de entrada estándar, y se envía al dispositivo estándar de salida. Si al llamar a la función no había ningún carácter disponible, se esperará a que lo haya. Normalmente el dispositivo estándar de entrada es el teclado, y el dispositivo estándar de salida es la pantalla.
+ 
+ 
+INT 21H Función 02H
+Salida de Carácter
+LLAMADA:
+AH = 02H
+DL = Código ASCII a enviar al dispositivo de salida.
+DEVUELVE:
+NADA.
+EFECTO: Se envía el carácter depositado en el registro DL al dispositivo estándar de salida. La salida puede ser redireccionada hacia un fichero, impresora, etc
+
+INT 21H Función 09H
+Visualización de una cadena de caracteres
+LLAMADA:
+AH = 09H
+DS:DX = Segmento: Desplazamiento de la cadena a visualizar (in DX - offset address of string in data segment)
+DS debe apuntar al segmento donde se encuentra la cadena.
+DX debe contener el desplazamiento de la cadena dentro de ese segmento.
+
+INT 21H (0x21)
+Function 0DH (0x0D or 13) -> Disk reset
+Call with: AH = 0DH
+Returns: Nothing
+Comments:
+This function flushes all file buffers. The function does not update the disk directory for any files that are still open
+
+INT 21H Función 0BH
+Comprobación del estado de la entrada
+LLAMADA:
+AH = 0BH
+DEVUELVE:
+AL = 00H si no hay carácter disponible.
+AL = FFH si hay algún carácter disponible.
+
+INT 16H AH = 01h	Teclado	Obtener el estado del buffer del teclado
+
+INT 16h,  00h (0)        Keyboard Read                                    all
+    Returns the next character in the keyboard buffer; if no character is
+    available, this service waits until one is available.
+       On entry:      AH         00h
+       Returns:       AL         ASCII character code
+                      AH         Scan code
+
+INT 16h,  01h (1)        Keyboard Status                                  all
+    Checks to see if a character is available in the buffer.
+       On entry:      AH         01h
+       Returns:       Zero       0, if character is available
+                                 1, if character is not available
+                      AL         ASCII character code (if character is
+                                 available)
+                      AH         Scan code (if character is available)
+
+; para el mouse 
+
+X = 00
+
+
+	on return:
+	AX = 0000  mouse driver not installed
+	     FFFF  mouse driver installed
+	BX = number of buttons
+
+
+	- resets mouse to default driver values:
+
+	  .  mouse is positioned to screen center
+	  .  mouse cursor is reset and hidden
+	  .  no interrupts are enabled (mask = 0)
+	  .  double speed threshold set to 64 mickeys per second
+	  .  horizontal mickey to pixel ratio (8 to 8)
+	  .  vertical mickey to pixel ratio (16 to 8)
+	  .  max width and height are set to maximum for video mode
+
+
+INT 33,8 - Set Mouse Vertical Min/Max Position
+
+	AX = 8
+	CX = minimum vertical position
+	DX = maximum vertical position
+
+	returns nothing
+
+	- restricts mouse vertical movement to window
+	- if min value is greater than max value they are swapped
+
+
+INT 33,7 - Set Mouse Horizontal Min/Max Position
+
+	AX = 7
+	CX = minimum horizontal position
+	DX = maximum horizontal position
+
+	returns nothing
+
+	- restricts mouse horizontal movement to window
+	- if min value is greater than max value they are swapped
+
+INT 33,4 - Set Mouse Cursor Position
+
+
+	AX = 4
+	CX = horizontal position
+	DX = vertical position
+
+
+	returns nothing
+
+
+	- default cursor position is at the screen center
+	- the position must be within the range of the current video mode
+	- the position may be rounded to fit screen mode resolution
